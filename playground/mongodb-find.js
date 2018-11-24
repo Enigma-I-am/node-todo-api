@@ -49,6 +49,6 @@
     
     
     // close the connection
-    // client.close();
+    client.close();
 
 });
