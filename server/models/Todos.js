@@ -1,5 +1,9 @@
+// This is a model file for Todo entry
+
+// require mongoose
 var mongoose = require('mongoose');
 
+// Todos variable is simply a mongoose model
 var Todos = mongoose.model('Todo',{
 
     text:{
@@ -20,4 +24,5 @@ var Todos = mongoose.model('Todo',{
     }
 });
 
+// export the mongoose model
 module.exports = {Todos};
