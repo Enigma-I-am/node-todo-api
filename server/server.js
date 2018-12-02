@@ -15,6 +15,8 @@ var {Users}= require('./models/Users');
 // The app variable initializes express
 var app = express();
 
+const port = process.env.PORT || 8080 ;
+
 
 // this methos is a middleware which tells express how to serve api endpoint
 app.use(bodyparser.json());
@@ -75,6 +77,6 @@ app.get('/todos',(req,res)=>{
 });
 
 // This runs our server on a port number (here the number is 3000)
-app.listen(8080,()=>{
-    console.log(`Server is running on port 8080`);
+app.listen(port,()=>{
+    console.log(`Server is running on port ${port}`);
 });
