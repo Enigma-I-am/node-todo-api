@@ -1,19 +1,21 @@
+const _ = require('lodash');
+
 // require the express and body-parser modules for API endpoints and routes
-var express = require('express');
-var bodyparser = require('body-parser');
+const express = require('express');
+const bodyparser = require('body-parser');
 
 
 // require the mongoose configuration file
-var {mongoose} = require('./DB/mongooseconfig.js');
+const {mongoose} = require('./DB/mongooseconfig.js');
 
 const {ObjectID} = require('mongodb');
 
 // require the Todos and Users models for writing to database
-var {Todos} =  require('./models/Todos');
-var {Users}= require('./models/Users');
+const {Todos} =  require('./models/Todos');
+const {Users}= require('./models/Users');
 
 // The app variable initializes express
-var app = express();
+const app = express();
 
 const port = process.env.PORT || 8080 ;
 
@@ -76,7 +78,68 @@ app.get('/todos',(req,res)=>{
 
 });
 
+// remove todo by id
+app.delete('/todos/:id',(req,res)=>{
+
+    var id = req.params.id;
+
+    if(!ObjectID.isValid(id)){
+        return console.log('ID is Invalid');
+    }
+
+
+    Todos.findByIdAndRemove(id).then((todo)=>{
+
+        if(!todo){
+            return res.status(400).send(err);
+        }
+
+        res.send(console.log(`todo has been deleted`));
+
+    }).catch((err)=>{
+        console.log(err);
+    });
+
+});
+
+
+// Update a todo by its id
+app.patch('/todos/:id',(req,res)=>{
+
+    var id = req.params.id;
+    var body = _.pick(req.body,['text','completed']);
+
+    if(!ObjectID.isValid(id)){
+        return console.log('ID is Invalid');
+    }
+
+    if(_.isBoolean(body.completed) && body.completed){
+        body.completedAt = new Date().getTime();
+    }else{
+        body.completed = false;
+        body.completedAt = null;
+    }
+
+    Todos.findByIdAndUpdate(id,{$set:body}, {  new: true  }).then((todo)=>{
+
+        if(!todo){
+            return res.status(400).send();
+        }
+
+        res.send({todo});
+
+    }).catch(()=>{
+
+    res.status(400).send();
+
+    });
+
+});
+
+
 // This runs our server on a port number (here the number is 3000)
 app.listen(port,()=>{
     console.log(`Server is running on port ${port}`);
 });
+
+module.exports = {app};
